@@ -2,6 +2,9 @@ require 'git'
 require 'csv'
 require 'fileutils'
 require 'travis'
+require 'open4'
+
+@@number_of_repositories=3
 def create_repository()
   File.open('/home/zc/projects/wechat_jump_game/create.sh','w') do |file|
     file.puts 'cd /home/zc/projects/wechat_jump_game'
@@ -31,56 +34,122 @@ def tracis_enable()
   %x"chmod 777 /home/zc/projects/wechat_jump_game/travis.sh"
   `/home/zc/projects/wechat_jump_game/travis.sh`
 end
-def git()
-  g=Git.open('/home/zc/projects/wechat_jump_game')
-  glog=g.log(nil)
-  glog.each do |l|
-    p l.date
-
-    p l.sha
-  end
-  g.remotes.each do |l|
-    p l
-  end
-  g.branches.each do |l|
-    p l
-  end
-  #g.push('jump1','bc3af7b8457793aa8d7fbac2cfd8ce0ee1f19d0e')
-end
 
 def clone_repo(user_dir,repo_url,repo_dir)
-  FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
-  result=%x"cd #{user_dir} && git clone #{repo_url}"
-  p '=================================================================================='
-  p result
-  p $?
-  p '=================================================================================='
-  result=%x"cd #{user_dir} && git log"
-  p '=================================================================================='
-  p result
-  p $?
-  p '=================================================================================='
+  i=0
+  while(i<600)
+    FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
+    result=%x"cd #{user_dir} && git clone #{repo_url}"
+    if $?.to_i!=0
+      i+=1
+      sleep 60
+      next
+    else
+      break
+    end
+  end
+end
+
+def create_github_repo(repo_dir,user_name,repo_name,i)
+  k=0
+  while(i<600)
+    %x"cd #{repo_dir} && hub create #{user_name}_#{repo_name}_#{i}"
+    if $?.to_i!=0
+      k+=1
+      sleep 60
+      next
+    else
+      puts "Create repo zhangch1991425/#{user_name}_#{repo_name}_#{i} on Github"
+      break
+    end
+  end
+end
+
+def open_travis(repo_dir,user_name,repo_name,i)
+  k=0
+  while(k<600)
+    %x"cd #{repo_dir} && travis enable -r zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+    if $?.to_i!=0
+      k+=1
+      sleep 60
+      next
+    else
+      puts "Enable travis zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      break
+    end
+  end
+end
+
+def link_remote(repo_dir,user_name,repo_name,i)
+  k=0
+  while(k<600)
+    %x"cd #{repo_dir} && git remote add #{user_name}_#{repo_name}_#{i} git@github.com:zhangch1991425/#{user_name}_#{repo_name}_#{i}.git"
+    if $?.to_i!=0
+      k+=1
+      sleep 60
+      next
+    else
+      puts "Link to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      break
+    end
+  end
+end
+
+def enable_travis(repo_dir,user_name,repo_name)
+  (0...@@number_of_repositories).each do |i|
+    create_github_repo(repo_dir,user_name,repo_name,i)
+    sleep 60
+    open_travis(repo_dir,user_name,repo_name,i)
+    link_remote(repo_dir,user_name,repo_name,i)
+  end
+end
+
+def pre_build_completed(user_name,repo_name,i)
+  sleep 300
+  travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
+  return unless travis_repo
+  last=travis_repo.last_build
+  return unless last
+  while(last.running?)
+    sleep 300
+  end
+end
+
+def push(repo_dir,user_name,repo_name,l,i)
+  k=0
+  while(k<5)
+    %x"cd #{repo_dir} && git push #{user_name}_#{repo_name}_#{i} #{l.sha}:refs/heads/master"
+    if $?.to_i!=0
+      puts "===Push Error $?=#{$?.to_i} #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      k+=1
+      sleep 60
+      next
+    else
+      puts "===Push #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      break
+    end
+  end
+end
+
+def git_push(repo_dir,user_name,repo_name,first_sha)
+  g=Git.open(repo_dir)
+  g_log=g.log(nil).between(first_sha,nil)
+  g_log.reverse_each do |l|
+    (0...@@number_of_repositories).each do |i|
+      push(repo_dir,user_name,repo_name,l,i)
+    end
+    sleep 20
+  end
 end
 
 def create_dir(user_name,repo_name,repo_url,first_sha)
   user_dir=File.join('repositories',user_name)
   repo_dir=File.join('repositories',user_name,repo_name)
-  FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
+  #FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
   FileUtils.mkdir_p(user_dir) unless File.exist?(user_dir)
-  clone_repo(user_dir,repo_url,repo_dir)
-  #%x"cd #{user_dir} && git clone #{repo_url}"
-=begin
-  %x"cd #{repo_dir} && hub create #{user_name}_#{repo_name} && travis enable -r zhangch1991425/#{user_name}_#{repo_name}"
-  %x"cd #{repo_dir} && git remote add #{user_name}_#{repo_name} git@github.com:zhangch1991425/#{user_name}_#{repo_name}.git"
-
-  g=Git.open(repo_dir)
-  g_log=g.log(nil).between(first_sha,nil)
-  g_log.reverse_each do |l|
-    puts "#{l.sha}  #{l.date}"
-    %x"cd #{repo_dir} && git push #{user_name}_#{repo_name} #{l.sha}:refs/heads/master"
-    sleep 60
-  end
-=end
+  #clone_repo(user_dir,repo_url,repo_dir)
+  #enable_travis(repo_dir,user_name,repo_name)
+  git_push(repo_dir,user_name,repo_name,first_sha)
 end
 
 def use_travis(user_name,repo_name,repo_url)
@@ -104,12 +173,4 @@ def csv_traverse(csv_file)
 end
 
 csv_traverse('java_github_repo.csv')
-=begin
-g=Git.open('/home/zc/projects/guava')
-g_log=g.log(nil)
-g_log.each do |l|
-  puts "#{l.sha}  #{l.date}"
-  output=%x"cd /home/zc/projects/guava && git branch --contains #{l.sha}"
-  puts output
-end
-=end
+
