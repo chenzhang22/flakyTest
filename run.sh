@@ -1,18 +1,7 @@
 #!/bin/bash  
-  
-function func_testreco  
-{  
-    # args  
-    param_1=$1  
-    for i in $param_1  
-    do  
-        cmd1=“A &”  
-        cmd2="B &"  
-        cmd3="C &"  
-        cmd4="D &"  
-    done  
-    wait  
-}  
-  
-set -o errexit  
-func_testreco $param_1 
+
+(nohup ruby main.rb repo0 > output0 2>1& & )&
+(nohup ruby main.rb repo1 > output1 2>1& & )&
+(nohup ruby main.rb repo2 > output2 2>1& & )&
+(nohup ruby main.rb repo3 > output3 2>1& & )&
+(nohup ruby main.rb repo4 > output4 2>1& & )&

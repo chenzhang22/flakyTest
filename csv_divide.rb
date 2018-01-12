@@ -18,7 +18,7 @@ def csv_traverse(csv_file)
     else
       i=4
     end
-    File.open("repo#{i}.csv",'w') do |file|
+    File.open("repo#{i}.csv",'a+') do |file|
       CSV(file,col_sep:',') do |csv|
         csv<<[row[4],row[2],row[5]]
       end

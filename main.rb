@@ -4,7 +4,7 @@ require 'fileutils'
 require 'travis'
 require 'open4'
 
-@@number_of_repositories=3
+@@number_of_repositories=5
 def create_repository()
   File.open('/home/zc/projects/wechat_jump_game/create.sh','w') do |file|
     file.puts 'cd /home/zc/projects/wechat_jump_game'
@@ -138,7 +138,9 @@ def git_push(repo_dir,user_name,repo_name,first_sha)
     (0...@@number_of_repositories).each do |i|
       push(repo_dir,user_name,repo_name,l,i)
     end
-    sleep 20
+    (0...@@number_of_repositories).each do |i|
+      pre_build_completed(user_name,repo_name,i)
+    end
   end
 end
 
@@ -147,8 +149,8 @@ def create_dir(user_name,repo_name,repo_url,first_sha)
   repo_dir=File.join('repositories',user_name,repo_name)
   #FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
   FileUtils.mkdir_p(user_dir) unless File.exist?(user_dir)
-  #clone_repo(user_dir,repo_url,repo_dir)
-  #enable_travis(repo_dir,user_name,repo_name)
+  clone_repo(user_dir,repo_url,repo_dir)
+  enable_travis(repo_dir,user_name,repo_name)
   git_push(repo_dir,user_name,repo_name,first_sha)
 end
 
@@ -168,9 +170,9 @@ end
 
 def csv_traverse(csv_file)
   CSV.foreach(csv_file,headers:true,col_sep:',') do |row|
-    use_travis(row[4],row[2],row[5])
+    use_travis(row[0],row[1],row[2])
   end
 end
-
-csv_traverse('java_github_repo.csv')
+csv_traverse(ARGV[0])
+#csv_traverse('java_github_repo.csv')
 
