@@ -106,7 +106,14 @@ end
 
 def pre_build_completed(user_name,repo_name,i)
   sleep 300
-  travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
+  i=0
+  begin
+    travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
+  rescue
+    travis_repo=nil
+    i+=1
+    retry if i<10
+  end
   return unless travis_repo
   last=travis_repo.last_build
   return unless last
@@ -155,14 +162,17 @@ def create_dir(user_name,repo_name,repo_url,first_sha)
 end
 
 def use_travis(user_name,repo_name,repo_url)
+  i=0
   begin
     travis_repo=Travis::Repository.find("#{user_name}/#{repo_name}")
   rescue Exception=>e
+    travis_repo=nil
     puts e
     puts "#{user_name},#{repo_name}"
-    return
+    i+=1
+    retry if i<10
   end
-  if travis_repo.last_build && travis_repo.last_build.number.to_i>10
+  if travis_repo && travis_repo.last_build && travis_repo.last_build.number.to_i>10
     first_sha=travis_repo.build(1).commit.sha
     create_dir(user_name,repo_name,repo_url,first_sha)
   end
@@ -172,6 +182,7 @@ def csv_traverse(csv_file)
   CSV.foreach(csv_file,headers:true,col_sep:',') do |row|
     use_travis(row[0],row[1],row[2])
   end
+  puts '========================END============================='
 end
 csv_traverse(ARGV[0])
 #csv_traverse('java_github_repo.csv')

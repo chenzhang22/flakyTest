@@ -25,4 +25,4 @@ def csv_traverse(csv_file)
     end
   end
 end
-csv_traverse('java_github_repo1.csv')
+csv_traverse('java_github_repo.csv')
