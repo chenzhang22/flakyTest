@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c436f63e-b2c8-422a-922d-c425ebc76e1f" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/csv_divide.rb" afterPath="$PROJECT_DIR$/csv_divide.rb" />
-      <change beforePath="$PROJECT_DIR$/java_github_repo.csv" afterPath="$PROJECT_DIR$/java_github_repo.csv" />
-      <change beforePath="$PROJECT_DIR$/java_github_repo1.csv" afterPath="" />
       <change beforePath="$PROJECT_DIR$/main.rb" afterPath="$PROJECT_DIR$/main.rb" />
-      <change beforePath="$PROJECT_DIR$/output" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/repo0.csv" afterPath="$PROJECT_DIR$/repo0.csv" />
-      <change beforePath="$PROJECT_DIR$/repo1.csv" afterPath="$PROJECT_DIR$/repo1.csv" />
-      <change beforePath="$PROJECT_DIR$/repo2.csv" afterPath="$PROJECT_DIR$/repo2.csv" />
-      <change beforePath="$PROJECT_DIR$/repo3.csv" afterPath="$PROJECT_DIR$/repo3.csv" />
-      <change beforePath="$PROJECT_DIR$/repo4.csv" afterPath="$PROJECT_DIR$/repo4.csv" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -39,8 +30,8 @@
       <file leaf-file-name="main.rb" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-951">
-              <caret line="117" column="29" lean-forward="true" selection-start-line="117" selection-start-column="29" selection-end-line="117" selection-end-column="29" />
+            <state relative-caret-position="165">
+              <caret line="112" column="19" lean-forward="true" selection-start-line="112" selection-start-column="19" selection-end-line="112" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -72,8 +63,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="506" />
-    <option name="y" value="157" />
+    <option name="x" value="365" />
+    <option name="y" value="154" />
     <option name="width" value="1308" />
     <option name="height" value="719" />
   </component>
@@ -199,15 +190,15 @@
       <workItem from="1515143075055" duration="2467000" />
       <workItem from="1515572380176" duration="4191000" />
       <workItem from="1515643463334" duration="13385000" />
-      <workItem from="1515665624993" duration="22524000" />
+      <workItem from="1515665624993" duration="23222000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="78926000" />
+    <option name="totallyTimeSpent" value="79624000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="506" y="157" width="1308" height="719" extended-state="0" />
+    <frame x="365" y="154" width="1308" height="719" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15519878" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -299,8 +290,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-951">
-          <caret line="117" column="29" lean-forward="true" selection-start-line="117" selection-start-column="29" selection-end-line="117" selection-end-column="29" />
+        <state relative-caret-position="165">
+          <caret line="112" column="19" lean-forward="true" selection-start-line="112" selection-start-column="19" selection-end-line="112" selection-end-column="19" />
           <folding />
         </state>
       </provider>

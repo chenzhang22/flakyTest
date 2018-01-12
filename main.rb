@@ -111,8 +111,9 @@ def pre_build_completed(user_name,repo_name,i)
     travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
   rescue
     travis_repo=nil
+    sleep 60
     i+=1
-    retry if i<10
+    retry if i<100
   end
   return unless travis_repo
   last=travis_repo.last_build
@@ -169,6 +170,7 @@ def use_travis(user_name,repo_name,repo_url)
     travis_repo=nil
     puts e
     puts "#{user_name},#{repo_name}"
+    sleep 60
     i+=1
     retry if i<10
   end
