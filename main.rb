@@ -3,7 +3,7 @@ require 'csv'
 require 'fileutils'
 require 'travis'
 require 'open4'
-
+require 'date'
 @@number_of_repositories=5
 def create_repository()
   File.open('/home/zc/projects/wechat_jump_game/create.sh','w') do |file|
@@ -127,21 +127,32 @@ def push(repo_dir,user_name,repo_name,l,i)
   k=0
   while(k<5)
     %x"cd #{repo_dir} && git push #{user_name}_#{repo_name}_#{i} #{l.sha}:refs/heads/master"
-    if $?.to_i!=0
+    if $?.to_i==0
+      puts "===Push #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      break
+    elsif $?.to_i==256
       puts "===Push Error $?=#{$?.to_i} #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      puts "===hint: Updates were rejected because the tip of your current branch is behind"
+      break
+    elsif $?.to_i==32768
+      puts "===Push Error $?=#{$?.to_i} #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      puts "===ERROR: Repository not found"
       k+=1
       sleep 60
       next
     else
-      puts "===Push #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
-      break
+      puts "===Push Error $?=#{$?.to_i} #{l.sha}  #{l.date} to Github repo zhangch1991425/#{user_name}_#{repo_name}_#{i}"
+      k+=1
+      sleep 60
+      next
     end
   end
 end
 
-def git_push(repo_dir,user_name,repo_name,first_sha)
+def git_push(repo_dir,user_name,repo_name,first_commit_time)
+  days=(Time.now.to_date-first_commit_time.getlocal.to_date).to_i
   g=Git.open(repo_dir)
-  g_log=g.log(nil).between(first_sha,nil)
+  g_log=g.log(nil).since("#{days} days ago")
   g_log.reverse_each do |l|
     (0...@@number_of_repositories).each do |i|
       push(repo_dir,user_name,repo_name,l,i)
@@ -152,14 +163,14 @@ def git_push(repo_dir,user_name,repo_name,first_sha)
   end
 end
 
-def create_dir(user_name,repo_name,repo_url,first_sha)
+def create_dir(user_name,repo_name,repo_url,first_commit_time)
   user_dir=File.join('repositories',user_name)
   repo_dir=File.join('repositories',user_name,repo_name)
   #FileUtils.rm_rf(repo_dir) if File.exist?(repo_dir)
   FileUtils.mkdir_p(user_dir) unless File.exist?(user_dir)
   clone_repo(user_dir,repo_url,repo_dir)
   enable_travis(repo_dir,user_name,repo_name)
-  git_push(repo_dir,user_name,repo_name,first_sha)
+  git_push(repo_dir,user_name,repo_name,first_commit_time)
 end
 
 def use_travis(user_name,repo_name,repo_url)
@@ -175,8 +186,8 @@ def use_travis(user_name,repo_name,repo_url)
     retry if i<10
   end
   if travis_repo && travis_repo.last_build && travis_repo.last_build.number.to_i>10
-    first_sha=travis_repo.build(1).commit.sha
-    create_dir(user_name,repo_name,repo_url,first_sha)
+    first_commit_time=travis_repo.build(1).commit.committed_at
+    create_dir(user_name,repo_name,repo_url,first_commit_time)
   end
 end
 
