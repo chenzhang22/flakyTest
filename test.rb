@@ -104,6 +104,18 @@ def enable_travis(repo_dir,user_name,repo_name)
   end
 end
 
+def get_last_build(travis_repo)
+  i=0
+  begin
+    last=travis_repo.last_build
+  rescue
+    travis_repo=nil
+    sleep 60
+    i+=1
+    retry if i<10
+  end
+end
+
 def pre_build_completed(user_name,repo_name,i)
   sleep 300
   i=0
@@ -116,10 +128,12 @@ def pre_build_completed(user_name,repo_name,i)
     retry if i<100
   end
   return unless travis_repo
-  last=travis_repo.last_build
+  last=get_last_build(travis_repo)
   return unless last
   until(last.finished?)
+    puts 'pre_build_completed'
     sleep 300
+    last=get_last_build(travis_repo)
   end
 end
 
