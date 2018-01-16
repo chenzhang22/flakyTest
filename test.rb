@@ -192,7 +192,7 @@ def use_travis(user_name,repo_name,repo_url)
 end
 
 def csv_traverse(csv_file)
-  CSV.foreach(csv_file,headers:fasle,col_sep:',') do |row|
+  CSV.foreach(csv_file,headers:false,col_sep:',') do |row|
     use_travis(row[0],row[1],row[2])
   end
   puts '========================END============================='
