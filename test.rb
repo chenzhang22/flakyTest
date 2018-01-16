@@ -185,6 +185,9 @@ def use_travis(user_name,repo_name,repo_url)
     i+=1
     retry if i<10
   end
+  p travis_repo
+  p travis_repo.last_build
+  p travis_repo.last_build.number.to_i
   if travis_repo && travis_repo.last_build && travis_repo.last_build.number.to_i>10
     first_commit_time=travis_repo.build(1).commit.committed_at
     create_dir(user_name,repo_name,repo_url,first_commit_time)
