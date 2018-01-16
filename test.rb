@@ -177,7 +177,7 @@ end
 def create_dir(user_name,repo_name,repo_url,first_commit_time)
   user_dir=File.join('repositories',user_name)
   repo_dir=File.join('repositories',user_name,repo_name)
-  return if File.exist?(repo_dir)
+  #return if File.exist?(repo_dir)
   FileUtils.mkdir_p(user_dir) unless File.exist?(user_dir)
   #clone_repo(user_dir,repo_url,repo_dir)
   #enable_travis(repo_dir,user_name,repo_name)
