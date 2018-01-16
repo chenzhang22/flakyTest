@@ -104,38 +104,33 @@ def enable_travis(repo_dir,user_name,repo_name)
   end
 end
 
-def get_last_build(travis_repo)
+def get_last_build(user_name,repo_name,i)
   i=0
   begin
+    travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
     last=travis_repo.last_build
+    puts last.number
+    puts last.number.class
   rescue
     travis_repo=nil
+    last=nil
     sleep 60
     i+=1
     retry if i<10
   end
+  return last
 end
 
 def pre_build_completed(user_name,repo_name,i)
   sleep 300
-  i=0
-  begin
-    travis_repo=Travis::Repository.find("zhangch1991425/#{user_name}_#{repo_name}_#{i}")
-  rescue
-    travis_repo=nil
-    sleep 60
-    i+=1
-    retry if i<100
-  end
-  return unless travis_repo
-  last=get_last_build(travis_repo)
+  last=get_last_build(user_name,repo_name,i)
   return unless last
   until(last.finished?)
     puts 'pre_build_completed'
     puts last.number
     puts last.number.class
     sleep 300
-    last=get_last_build(travis_repo)
+    last=get_last_build(user_name,repo_name,i)
   end
 end
 
