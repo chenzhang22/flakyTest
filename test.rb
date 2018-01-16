@@ -111,6 +111,7 @@ def get_last_build(user_name,repo_name,i)
     last=travis_repo.last_build
     puts last.number
     puts last.number.class
+    puts last.finished?
   rescue
     travis_repo=nil
     last=nil
@@ -127,8 +128,6 @@ def pre_build_completed(user_name,repo_name,i)
   return unless last
   until(last.finished?)
     puts 'pre_build_completed'
-    puts last.number
-    puts last.number.class
     sleep 300
     last=get_last_build(user_name,repo_name,i)
   end
