@@ -112,7 +112,8 @@ def get_last_build(user_name,repo_name,i)
     puts last.number
     puts last.number.class
     puts last.finished?
-  rescue
+  rescue Exception=>e
+    puts e
     travis_repo=nil
     last=nil
     sleep 60
@@ -162,7 +163,7 @@ end
 def git_push(repo_dir,user_name,repo_name,first_commit_time)
   days=(Time.now.to_date-first_commit_time.getlocal.to_date).to_i
   g=Git.open(repo_dir)
-  g_log=g.log(nil).since("#{days} days ago")
+  g_log=g.log(nil).since("#{days-1} days ago")
   g_log.reverse_each do |l|
     (0...@@number_of_repositories).each do |i|
       push(repo_dir,user_name,repo_name,l,i)
@@ -178,8 +179,8 @@ def create_dir(user_name,repo_name,repo_url,first_commit_time)
   repo_dir=File.join('repositories',user_name,repo_name)
   return if File.exist?(repo_dir)
   FileUtils.mkdir_p(user_dir) unless File.exist?(user_dir)
-  clone_repo(user_dir,repo_url,repo_dir)
-  enable_travis(repo_dir,user_name,repo_name)
+  #clone_repo(user_dir,repo_url,repo_dir)
+  #enable_travis(repo_dir,user_name,repo_name)
   git_push(repo_dir,user_name,repo_name,first_commit_time)
 end
 
